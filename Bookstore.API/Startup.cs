@@ -1,3 +1,4 @@
+using Bookstore.API.Extensions;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
 
 namespace Bookstore.API
 {
@@ -23,11 +22,12 @@ namespace Bookstore.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-      
             services.AddControllers();
 
             services.AddDbContext<BookstoreDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
+
+            services.AddApplicationServices();
 
             services.AddSwaggerGen(c =>
             {
@@ -46,7 +46,12 @@ namespace Bookstore.API
 
             app.UseSwagger();
 
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore.API v1"));
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore.API v1");
+
+                options.DefaultModelsExpandDepth(-1);
+            });
 
             app.UseHttpsRedirection();
 
