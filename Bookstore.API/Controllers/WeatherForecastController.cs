@@ -26,7 +26,7 @@ namespace Bookstore.API.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Test";
+            return Environment.GetEnvironmentVariable("BookstoreCS");
         }
     }
 }
