@@ -24,8 +24,8 @@ namespace Bookstore.API
       
             services.AddControllers();
 
-            services.AddDbContext<BookstoreDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
+            //services.AddDbContext<BookstoreDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
 
             services.AddSwaggerGen(c =>
             {
