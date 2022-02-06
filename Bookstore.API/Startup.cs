@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
+using System.IO;
 
 namespace Bookstore.API
 {
@@ -24,12 +26,13 @@ namespace Bookstore.API
       
             services.AddControllers();
 
-            //services.AddDbContext<BookstoreDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
+            services.AddDbContext<BookstoreDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bookstore.API", Version = "v1" });
+
             });
         }
 
@@ -39,9 +42,11 @@ namespace Bookstore.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore.API v1"));
             }
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore.API v1"));
 
             app.UseHttpsRedirection();
 
