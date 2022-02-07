@@ -6,7 +6,7 @@ namespace Core.Specifications
     public class BooksWithYearOfPublicationAndAuthor : BaseSpecifcation<Book>
     {
         public BooksWithYearOfPublicationAndAuthor(SpecsParams Params) : base(x =>
-            (Params.PublicationYear==0 || x.DateOfPublication.Year==Params.PublicationYear) &&
+            (Params.PublicationYear == 0 || x.DateOfPublication.Year == Params.PublicationYear) &&
             (!Params.AuthorId.HasValue || x.AuthorId == Params.AuthorId)
         )
         {
@@ -14,14 +14,14 @@ namespace Core.Specifications
             AddOrderBy(x => x.Title);
             ApplyPaging(Params.PageSize * (Params.PageIndex - 1), Params.PageSize);
 
-            if (!string.IsNullOrEmpty(Params.Sort))
+            if (Params.Sort != 0)
             {
                 switch (Params.Sort)
                 {
-                    case "priceAsc":
+                    case SpecsParams.SortBy.priceAsc:
                         AddOrderBy(p => p.Price);
                         break;
-                    case "priceDesc":
+                    case SpecsParams.SortBy.priceDesc:
                         AddOrderByDescending(p => p.Price);
                         break;
                     default:
@@ -29,6 +29,7 @@ namespace Core.Specifications
                         break;
                 }
             }
+
         }
 
         public BooksWithYearOfPublicationAndAuthor(Guid id) : base(x => x.Id == id)

@@ -19,12 +19,19 @@ namespace Core.Specifications
         }
 
         public Guid? AuthorId { get; set; }
-        public string Sort { get; set; }
+        public SortBy Sort { get; set; }
         private int _yearOfPublication;
         public int PublicationYear
         {
             get => _yearOfPublication;
             set => _yearOfPublication = value;
         }
+
+        public enum SortBy
+        {
+            priceAsc=1,
+            priceDesc
+        }
+
     }
 }
