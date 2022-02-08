@@ -2,12 +2,15 @@
 using Bookstore.API.Dtos;
 using Bookstore.API.Helpers;
 using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Bookstore.API.Controllers
@@ -21,12 +24,15 @@ namespace Bookstore.API.Controllers
         private readonly IRepository<Book> _bookRepo;
 
         private readonly IMapper _mapper;
+        private readonly IBookTransactionsService _service;
 
-        public BooksController(IRepository<Book> bookRepo, IMapper mapper)
+        public BooksController(IRepository<Book> bookRepo, IMapper mapper, IBookTransactionsService service)
         {
             _bookRepo = bookRepo;
 
             _mapper = mapper;
+
+            _service = service;
         }
 
         // GET: api/<BooksController>
@@ -35,7 +41,7 @@ namespace Bookstore.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Pagination<BookDto>>> GetBooks([FromQuery] SpecsParams Params)
         {
-            if (Params.PageSize<1)
+            if (Params.PageSize < 1)
             {
                 return BadRequest("Page size can't be less than 1");
             }
@@ -77,16 +83,35 @@ namespace Bookstore.API.Controllers
 
         // POST api/<BooksController>
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Post([FromBody] BookToSaveDto value)
         {
 
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            // have a unique id generator service, but this will suffice for now
+            var id = new Guid();
+
+            var trans = new BookTransaction()
+            {
+                BookId = id,
+                TransactionType = TransactionTypes.StockAddition,
+                DoneBy = email,
+            };
+
+
             var newBook = new Book();
 
-            var book = _mapper.Map(value,newBook);
+            var book = _mapper.Map(value, newBook);
 
-            if (book==null)
+            book.CreatedBy = email;
+
+            book.CreatedDate = DateTime.Now;
+
+            if (book == null)
             {
                 return BadRequest("Problem creating the book");
             }
@@ -95,23 +120,29 @@ namespace Bookstore.API.Controllers
                 _bookRepo.Add(book);
 
                 await _bookRepo.Complete();
+
+                await _service.CreateTransactionAsync(trans);
             }
             catch (Exception)
             {
-
+                return new BadRequestObjectResult("Problem creating the book");
             }
-           
+
             return Ok(book);
         }
 
         // PUT api/<BooksController>/5
         [HttpPut]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Put([FromBody] BookToSaveDto value)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Put([FromBody] BookToEditDto value)
         {
 
             var newBook = new Book();
+
+            var email = User.FindFirstValue(ClaimTypes.Email);
 
             var book = _mapper.Map(value, newBook);
 
@@ -119,11 +150,22 @@ namespace Bookstore.API.Controllers
             {
                 return BadRequest("Problem updating the book");
             }
+
+            var trans = new BookTransaction()
+            {
+                BookId = value.Id,
+                TransactionType = TransactionTypes.StockReduction,
+                DoneBy = email,
+            };
+
             try
             {
                 _bookRepo.Update(book);
 
                 await _bookRepo.Complete();
+
+                await _service.CreateTransactionAsync(trans);
+
             }
             catch (Exception)
             {
@@ -133,5 +175,76 @@ namespace Bookstore.API.Controllers
             return Ok(book);
         }
 
+        // POST api/<BooksController>/5
+        [HttpPost("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BookDto>> AddExistingBookStock(Guid id, int StockToAddOrRemove)
+        {
+            var spec = new BooksWithYearOfPublicationAndAuthor(id);
+
+            var book = await _bookRepo.GetEntityWithSpec(spec);
+
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            if (book == null)
+            {
+                return NotFound($"Book not found with id {id}");
+            }
+
+            var trans = new BookTransaction()
+            {
+                BookId = book.Id,
+                TransactionType = StockToAddOrRemove > 0 ? TransactionTypes.StockAddition : TransactionTypes.StockReduction,
+                DoneBy = email,
+            };
+
+            if ((book.Count + StockToAddOrRemove)<0)
+            {
+                return new BadRequestObjectResult("Stock can not go below 0");
+            }
+
+            book.Count += StockToAddOrRemove;
+
+            book.ModifiedBy = email;
+
+            book.ModifiedDate = DateTime.Now;
+
+            try
+            {
+               
+                _bookRepo.Update(book);
+
+                await _bookRepo.Complete();
+
+                await _service.CreateTransactionAsync(trans);
+
+            }
+            catch (Exception)
+            {
+                return new BadRequestObjectResult("Problem updating the book");
+
+            }
+
+            var returnValue = _mapper.Map(book, new BookDto());
+
+            return Ok(returnValue);
+        }
+
+        // GET api/<BooksController>/transactions/5
+        [HttpGet("Transactions/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetTransactionsPerBook(Guid id)
+        {
+            var bookTrans = await _service.GetTransactionsByBookAsync(id);
+
+            if (bookTrans==null) return NotFound();
+            
+            var trans = _mapper.Map(bookTrans, new List<BookTransactionDto>());
+
+            return Ok(trans);
+        }
     }
 }

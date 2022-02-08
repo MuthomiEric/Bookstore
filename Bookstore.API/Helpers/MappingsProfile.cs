@@ -12,8 +12,11 @@ namespace Bookstore.API.Helpers
     {
         public MappingProfiles()
         {
-            CreateMap<Book, BookDto>();
+            CreateMap<Book, BookDto>()
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.GetBookStatus()));
             CreateMap<BookToSaveDto, Book>();
+            CreateMap<BookToEditDto, Book>();
+            CreateMap<BookTransaction, BookTransactionDto>().ForMember(d => d.TransactionType, o => o.MapFrom(s => s.GetTransactionType()));
 
         }
     }

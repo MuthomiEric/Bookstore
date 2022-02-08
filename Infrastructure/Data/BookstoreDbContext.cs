@@ -18,6 +18,12 @@ namespace Infrastructure.Data
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<BookTransaction> BookTransactions { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Bookstore.API.Extensions;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,13 +28,15 @@ namespace Bookstore.API
             services.AddDbContext<BookstoreDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BookstoreCS")));
 
+            services.AddDbContext<AppIdentityDbContext>(options =>
+                  options.UseSqlServer(Configuration.GetConnectionString("AppIdentityCS")));
+
             services.AddApplicationServices();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bookstore.API", Version = "v1" });
+            services.AddIdentityServices(Configuration);
 
-            });
+            services.AddSwaggerDocumentation();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,18 +47,14 @@ namespace Bookstore.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Bookstore.API v1");
-
-                options.DefaultModelsExpandDepth(-1);
-            });
+           
+            app.UseSwaggerDocumentation();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

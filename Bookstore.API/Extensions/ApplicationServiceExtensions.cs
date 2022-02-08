@@ -1,12 +1,8 @@
 ﻿using Bookstore.API.Helpers;
 using Core.Interfaces;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Bookstore.API.Extensions
 {
@@ -14,6 +10,10 @@ namespace Bookstore.API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<ITokenService, TokenService>();
+
+            services.AddScoped<IBookTransactionsService, BookTransactionsService>();
+
             services.AddScoped(typeof(IRepository<>), (typeof(Repository<>)));
 
             services.AddAutoMapper(typeof(MappingProfiles));
