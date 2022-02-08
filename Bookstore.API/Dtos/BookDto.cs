@@ -18,5 +18,7 @@ namespace Bookstore.API.Dtos
         public string AuthorLastName { get; set; }
         public string AuthorEmail { get; set; }
         public DateTime AuthorDateOfBirth { get; set; }
+        public string Status { get; set; }
     }
 }
+

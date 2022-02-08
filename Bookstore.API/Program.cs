@@ -1,5 +1,8 @@
+using Core.Entities.Identity;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,11 +29,16 @@ namespace Bookstore.API
 
             try
             {
+                // seed books and authors
                 var context = services.GetRequiredService<BookstoreDbContext>();
-
                 await context.Database.MigrateAsync();
-
                 await BookStoreSeeder.SeedAsync(context, loggerFactory);
+
+                // seed super user
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+                await identityContext.Database.MigrateAsync();
+                await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
             }
             catch (Exception ex)
             {

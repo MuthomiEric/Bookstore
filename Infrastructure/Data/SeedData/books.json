@@ -5,7 +5,9 @@
     "DateOfPublication": "2019-01-06T17:16:40",
     "Price": 200,
     "ImageUrl": "images/books/book1.png",
-    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E"
+    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E",
+    "Count": 20,
+    "CreatedBy": "superadmin@bookstore.com"
 
   },
   {
@@ -14,7 +16,9 @@
     "DateOfPublication": "2010-01-06T17:16:40",
     "Price": 500,
     "ImageUrl": "images/books/book2.png",
-    "AuthorId": "D7D5C8D8-16ED-4CC2-8A4C-556CFD9EE58E"
+    "AuthorId": "D7D5C8D8-16ED-4CC2-8A4C-556CFD9EE58E",
+    "Count": 10,
+    "CreatedBy": "superadmin@bookstore.com"
   },
   {
     "Title": "Vahana Masterclass",
@@ -22,7 +26,9 @@
     "DateOfPublication": "2019-01-06T17:16:40",
     "Price": 2000,
     "ImageUrl": "images/books/book3.png",
-    "AuthorId": "D7D5C8D8-16ED-4CC2-8A4C-556CFD9EE58E"
+    "AuthorId": "D7D5C8D8-16ED-4CC2-8A4C-556CFD9EE58E",
+    "Count": 5,
+    "CreatedBy": "superadmin@bookstore.com"
   },
   {
     "Title": "Vahana Masterclass",
@@ -30,7 +36,9 @@
     "DateOfPublication": "2019-01-06T17:16:40",
     "Price": 100,
     "ImageUrl": "images/books/book4.png",
-    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E"
+    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E",
+    "Count": 2,
+    "CreatedBy": "superadmin@bookstore.com"
   },
   {
     "Title": "Vahana Masterclass",
@@ -38,7 +46,9 @@
     "DateOfPublication": "2019-01-06T17:16:40",
     "Price": 400,
     "ImageUrl": "images/books/book5.png",
-    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E"
+    "AuthorId": "D7D8C8D8-16ED-4CC2-8A4C-556CFD9EE58E",
+    "Count": 0,
+    "CreatedBy": "superadmin@bookstore.com"
   }
  
 ]

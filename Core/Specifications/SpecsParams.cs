@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace Core.Specifications
 
         public enum SortBy
         {
-            priceAsc=1,
+            priceAsc = 1,
             priceDesc
         }
 

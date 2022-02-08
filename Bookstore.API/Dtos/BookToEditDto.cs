@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Bookstore.API.Dtos
 {
-    public class BookToSaveDto
+    public class BookToEditDto
     {
+        public Guid Id { get; set; }
+        [Required]
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
@@ -19,7 +21,6 @@ namespace Bookstore.API.Dtos
         [Required]
         public Guid AuthorId { get; set; }
         public string CreatedBy { get; set; }
-        [Required]
-        public int Count { get; set; }
     }
 }
+
