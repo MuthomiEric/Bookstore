@@ -7,7 +7,7 @@ Or copy paste this Url ```sh https://bookstore-api.azurewebsites.net/swagger/ind
 
 Either of the above will navigate you to the swagger documentation page of the Bookstore API.
 The app uses JWT token for authentication. Some actions might require you to be Authenticated. Use 
-```sh superadmin@bookstore.com ```  as the username and ```sh Pa$$w0rd ``` as password to login through the login endpoint to get the Token. Click on authorize button and paste the token then you can test the actions.
+``` superadmin@bookstore.com ```  as the username and ``` Pa$$w0rd ``` as password to login through the login endpoint to get the Token. Click on authorize button and paste the token then you can test the actions.
 
 This can also be tested using Postman.
 
