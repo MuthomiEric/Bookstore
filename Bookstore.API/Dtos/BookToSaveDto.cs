@@ -18,8 +18,6 @@ namespace Bookstore.API.Dtos
         public string ImageUrl { get; set; }
         [Required]
         public Guid AuthorId { get; set; }
-        public string CreatedBy { get; set; }
-        [Required]
         public int Count { get; set; }
     }
 }

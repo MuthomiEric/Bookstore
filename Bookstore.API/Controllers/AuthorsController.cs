@@ -39,7 +39,7 @@ namespace Bookstore.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Author>> GetAuthor(Guid id)
+        public async Task<ActionResult> GetAuthor(Guid id)
         {
             var author = await _authorRepo.GetByIdAsync(id);
 

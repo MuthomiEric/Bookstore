@@ -39,7 +39,7 @@ namespace Bookstore.API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Pagination<BookDto>>> GetBooks([FromQuery] SpecsParams Params)
+        public async Task<ActionResult> GetBooks([FromQuery] SpecsParams Params)
         {
             if (Params.PageSize < 1)
             {
@@ -63,11 +63,9 @@ namespace Bookstore.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<BookDto>> GetBook(Guid id)
+        public async Task<ActionResult> GetBook(Guid id)
         {
-            var spec = new BooksWithYearOfPublicationAndAuthor(id);
-
-            var book = await _bookRepo.GetEntityWithSpec(spec);
+            var book = await _bookRepo.GetByIdAsync(id);
 
             var bookDto = new BookDto();
 
@@ -89,7 +87,10 @@ namespace Bookstore.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Post([FromBody] BookToSaveDto value)
         {
-
+            if (User==null)
+            {
+                return Unauthorized();
+            }
             var email = User.FindFirstValue(ClaimTypes.Email);
 
             var trans = new BookTransaction()
@@ -174,15 +175,20 @@ namespace Bookstore.API.Controllers
         }
 
         // POST api/<BooksController>/5
+        // Pass Positive or Negative value depending on whether you want to add or reduce the stock
         [HttpPost("{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<BookDto>> AddExistingBookStock(Guid id, int StockToAddOrRemove)
         {
-            var spec = new BooksWithYearOfPublicationAndAuthor(id);
+            var book = await _bookRepo.GetByIdAsync(id);
 
-            var book = await _bookRepo.GetEntityWithSpec(spec);
+            if (User==null)
+            {
+                return Unauthorized();
+            }
 
             var email = User.FindFirstValue(ClaimTypes.Email);
 
