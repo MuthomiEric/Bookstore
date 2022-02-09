@@ -92,12 +92,8 @@ namespace Bookstore.API.Controllers
 
             var email = User.FindFirstValue(ClaimTypes.Email);
 
-            // have a unique id generator service, but this will suffice for now
-            var id = new Guid();
-
             var trans = new BookTransaction()
             {
-                BookId = id,
                 TransactionType = TransactionTypes.StockAddition,
                 DoneBy = email,
             };
@@ -120,6 +116,8 @@ namespace Bookstore.API.Controllers
                 _bookRepo.Add(book);
 
                 await _bookRepo.Complete();
+
+                trans.BookId = book.Id;
 
                 await _service.CreateTransactionAsync(trans);
             }
