@@ -18,7 +18,7 @@ namespace Infrastructure.ModelConfigs
             builder.Property(s => s.LastName).IsRequired();
             builder.Property(s => s.DateOfBirth).IsRequired();
             builder.Property(s => s.Email).IsRequired();
-            builder.HasMany(s => s.Books).WithOne().OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(s => s.Books).WithOne(b=> b.Author).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
